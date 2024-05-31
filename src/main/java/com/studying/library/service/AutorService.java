@@ -1,34 +1,33 @@
 package com.studying.library.service;
 
-import com.studying.library.controller.dto.AutorDtoRequest;
-import com.studying.library.controller.dto.AutorDtoResponse;
+import com.studying.library.entity.Autor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Service
+@RequiredArgsConstructor
+@Service//repository  component
 public class AutorService {
 
+    private final List<Autor> repositorio;
 
-    private List<AutorDtoResponse> database = new ArrayList<>();
-
-    public List<AutorDtoResponse> findAll() {
-        return database;
+    public List<Autor> findAll() {
+        return repositorio;
     }
 
-    public AutorDtoResponse findById(final UUID id) {
+    public Autor findById(final UUID id) {
         return null;
     }
 
-    public AutorDtoResponse save(final AutorDtoRequest dto) {
-        var response = AutorDtoResponse.builder()
+    public Autor save(final Autor entity) {
+        var response = Autor.builder()
                 .id(UUID.randomUUID())
-                .email(dto.getEmail())
-                .name(dto.getName())
+                .email(entity.getEmail())
+                .name(entity.getName())
                 .build();
-        database.add(response);
+        repositorio.add(response);
         return response;
     }
 }

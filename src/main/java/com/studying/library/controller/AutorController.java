@@ -2,9 +2,10 @@ package com.studying.library.controller;
 
 import com.studying.library.controller.dto.AutorDtoRequest;
 import com.studying.library.controller.dto.AutorDtoResponse;
+import com.studying.library.controller.mapper.AutorMapper;
 import com.studying.library.service.AutorService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,34 +19,40 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
+import static com.studying.library.controller.mapper.AutorMapper.toDto;
+
 @RestController
 @RequestMapping(path = "/autor")
+@RequiredArgsConstructor
 @Log4j2
 public class AutorController {
 
-    @Autowired
-    private AutorService service;
+    private final AutorService service;
 
     @GetMapping
     public ResponseEntity<List<AutorDtoResponse>> findAll() {
         var autores = service.findAll();
-        return ResponseEntity.ok(autores);
+        final List<AutorDtoResponse> dto = toDto(autores);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<AutorDtoResponse> findById(@PathVariable("id") UUID id) {
         log.info("ID: " + id);
-        var autor = service.findById(id);
-        return ResponseEntity.ok(autor);
+        var dto = toDto(service.findById(id));
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping
-    public ResponseEntity<AutorDtoResponse> save(@RequestBody AutorDtoRequest dto) {
+    public ResponseEntity<AutorDtoResponse> save(@RequestBody AutorDtoRequest autorDto) {
         log.info("Saving");
-        var autor = service.save(dto);
+
+        var autor = AutorMapper.toEntity(autorDto);
+        var response = toDto(service.save(autor));
+
         return ResponseEntity.
                 status(HttpStatus.CREATED).
-                body(autor);
+                body(response);
     }
 
     @DeleteMapping("/{id}")
